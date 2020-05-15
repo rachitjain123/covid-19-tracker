@@ -2,7 +2,6 @@ package com.rjrks.coronavirustracking.models;
 
 public class LocationStats {
 
-    private String state;
     private String country;
     private int latestTotalCases;
 
@@ -16,13 +15,6 @@ public class LocationStats {
 
     private int diffFromPrevDay;
 
-    public String getState() {
-        return state;
-    }
-
-    public void setState(String state) {
-        this.state = state;
-    }
 
     public String getCountry() {
         return country;
@@ -43,7 +35,6 @@ public class LocationStats {
     @Override
     public String toString() {
         return "LocationStats{" +
-                "state='" + state + '\'' +
                 ", country='" + country + '\'' +
                 ", latestTotalCases=" + latestTotalCases +
                 '}';

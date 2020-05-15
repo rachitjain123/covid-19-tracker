@@ -14,8 +14,7 @@ import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class CoronaVirusDataService {
@@ -30,7 +29,6 @@ public class CoronaVirusDataService {
         con.setRequestMethod("GET");
         con.setRequestProperty("User-Agent", USER_AGENT);
         int responseCode = con.getResponseCode();
-        System.out.println("GET Response Code :: " + responseCode);
         if (responseCode == HttpURLConnection.HTTP_OK) { // success
             BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
             String inputLine;
@@ -53,26 +51,34 @@ public class CoronaVirusDataService {
     public void fetchVirusData() throws IOException {
 
         List<LocationStats> newStats = new ArrayList<>();
+        Map<String, LocationStats> countryTotal = new TreeMap<>();
 
         String responseString = sendGET();
         StringReader csvBodyReader = new StringReader(responseString);
         Iterable<CSVRecord> records = CSVFormat.DEFAULT.withFirstRecordAsHeader().parse(csvBodyReader);
 
         for (CSVRecord record : records) {
-            LocationStats locationStats = new LocationStats();
-            locationStats.setState(record.get("Province/State"));
-            locationStats.setCountry(record.get("Country/Region"));
 
-            int latestCases = Integer.parseInt(record.get(record.size() -1));
-            int prevDayCases = Integer.parseInt(record.get(record.size() -2));
+            int latestCases = Integer.parseInt(record.get(record.size() - 1));
+            int prevDayCases = Integer.parseInt(record.get(record.size() - 2));
 
-            locationStats.setLatestTotalCases(latestCases);
-            locationStats.setDiffFromPrevDay(latestCases - prevDayCases);
+            int diffFromPrevDayCases = latestCases - prevDayCases;
 
-            newStats.add(locationStats);
+            if (!countryTotal.containsKey(record.get("Country/Region"))) {
+                LocationStats newStat = new LocationStats();
+                newStat.setLatestTotalCases(0);
+                newStat.setDiffFromPrevDay(0);
+                newStat.setCountry(record.get("Country/Region"));
+                countryTotal.put(record.get("Country/Region"), newStat);
+            }
 
+            LocationStats countryStat = countryTotal.get(record.get("Country/Region"));
 
+            countryStat.setDiffFromPrevDay(countryStat.getDiffFromPrevDay() + diffFromPrevDayCases);
+            countryStat.setLatestTotalCases(countryStat.getLatestTotalCases() + latestCases);
         }
+
+        countryTotal.forEach((k,v) -> newStats.add(v));
 
         this.allStats = newStats;
     }
