@@ -1,5 +1,7 @@
 package com.rjrks.coronavirustracking.models;
 
+import java.text.NumberFormat;
+
 public class LocationStats {
 
     private String country;
@@ -32,11 +34,13 @@ public class LocationStats {
         this.latestTotalCases = latestTotalCases;
     }
 
-    @Override
-    public String toString() {
-        return "LocationStats{" +
-                ", country='" + country + '\'' +
-                ", latestTotalCases=" + latestTotalCases +
-                '}';
+    public String getNumFormattedLatestTotalCases() {
+        return NumberFormat.getIntegerInstance().format(latestTotalCases);
     }
+
+    public String getNumFormattedDiffFromPrevDay() {
+        return NumberFormat.getIntegerInstance().format(diffFromPrevDay);
+    }
+
+
 }

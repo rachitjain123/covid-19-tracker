@@ -32,9 +32,9 @@
 
         </tr>
         <tr th:each="locationStat : ${locationStats}">
-            <td th:text="${locationStat.country}"></td>
-            <td th:text="${locationStat.latestTotalCases}">0</td>
-            <td th:text="${locationStat.diffFromPrevDay}">0</td>
+            <td th:text="${locationStat.getCountry()}"></td>
+            <td th:text="${locationStat.getNumFormattedLatestTotalCases()}">0</td>
+            <td th:text="${locationStat.getNumFormattedDiffFromPrevDay()}">0</td>
 
         </tr>
     </table>
